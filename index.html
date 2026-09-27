@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="features.css">
 </head>
 <body>
   <div id="app">
@@ -39,11 +40,20 @@
 
         <button class="choose-places" id="choosePlacesBtn" type="button"><span><b>自己选择想去的地点</b><small>勾选后自动计算更顺路的线路</small></span><strong>去选择 →</strong></button>
         <section class="place-picker" id="placePicker" hidden aria-labelledby="pickerTitle">
-          <div class="picker-head"><div><p class="eyebrow">自由规划</p><h2 id="pickerTitle">选择地点</h2></div><button type="button" id="closePicker" aria-label="关闭">×</button></div>
+          <div class="picker-head"><div><p class="eyebrow">自由规划</p><h2 id="pickerTitle">我的方案</h2></div><button type="button" id="closePicker" aria-label="关闭">×</button></div>
+          <div class="custom-plan-fields">
+            <label><span>方案名称</span><input id="customTitle" maxlength="32" placeholder="例如：东莞松弛一日游"></label>
+            <div class="custom-field-row">
+              <label><span>出发日期</span><input id="customDate" type="date"></label>
+              <label><span>预计结束</span><input id="customEnd" type="time" value="20:00"></label>
+            </div>
+            <label class="crowd-toggle"><input id="customAvoidCrowd" type="checkbox"><span><b>希望避开人流</b><small>会给出错峰、预约和用餐建议</small></span></label>
+          </div>
           <label class="search-box"><span>⌕</span><input id="placeSearch" type="search" placeholder="搜索景点、美食、文化地点"></label>
           <div class="picker-actions"><span id="pickCount">已选 0 个</span><button type="button" id="clearPicks">清空</button></div>
           <div class="place-options" id="placeOptions"></div>
-          <button class="primary-button" id="buildCustomPlan" type="button"><span>生成最合适线路</span><b>→</b></button>
+          <div class="picked-schedule" id="pickedSchedule"></div>
+          <button class="primary-button" id="buildCustomPlan" type="button"><span>分析并生成我的方案</span><b>→</b></button>
         </section>
 
         <form class="planner-card" id="plannerForm">
@@ -123,6 +133,25 @@
         </form>
         <p class="ai-privacy">请勿输入身份证、手机号等敏感信息。AI 结果可能有误，开放时间和票价请在出发前核实。</p>
       </section>
+
+      <section class="view" id="communityView" aria-labelledby="communityTitle">
+        <div class="community-head">
+          <div><p class="eyebrow">旅行方案交流</p><h1 id="communityTitle">游迹社区</h1><p>看看大家怎么安排，也把自己的路线分享出来。</p></div>
+          <button id="openPublish" type="button">发布方案</button>
+        </div>
+        <div class="community-tabs" role="tablist">
+          <button class="active" type="button" data-feed="hot">推荐</button>
+          <button type="button" data-feed="latest">最新</button>
+          <button type="button" data-feed="saved">已收藏</button>
+        </div>
+        <form class="publish-card" id="publishForm" hidden>
+          <div class="publish-title"><div><b>分享当前方案</b><small id="publishPlanName">请先生成一个行程</small></div><button id="closePublish" type="button">×</button></div>
+          <label><span>标题</span><input id="postTitle" maxlength="38" placeholder="给你的方案起个吸引人的标题" required></label>
+          <label><span>补充推荐</span><textarea id="postNote" maxlength="260" rows="3" placeholder="哪些地方最值得去？有什么避坑或时间建议？" required></textarea></label>
+          <button class="primary-button" type="submit"><span>发布到社区</span><b>↑</b></button>
+        </form>
+        <div class="community-feed" id="communityFeed"></div>
+      </section>
     </main>
 
     <nav class="bottom-nav" aria-label="主要导航">
@@ -130,6 +159,7 @@
       <a href="#trip" data-view="trip"><span>◫</span><b>行程</b></a>
       <a href="#map" data-view="map"><span>⌖</span><b>地图</b></a>
       <a href="#ai" data-view="ai"><span>✦</span><b>AI规划</b></a>
+      <a href="#community" data-view="community"><span>◎</span><b>社区</b></a>
       <a href="#saved" data-view="saved"><span>♡</span><b>收藏</b></a>
     </nav>
   </div>
