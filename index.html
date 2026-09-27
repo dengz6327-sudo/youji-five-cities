@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#133a32">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="游迹">
+  <meta name="description" content="为广州、东莞、上海、深圳、杭州生成可执行的旅行路线。">
+  <title>游迹 · 五城旅行规划</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="游迹首页"><span class="brand-mark">迹</span><span>游迹</span></a>
+      <button class="icon-button" id="installBtn" type="button" aria-label="安装到手机" hidden>↓</button>
+    </header>
+
+    <main>
+      <section class="view active" id="homeView" aria-labelledby="homeTitle">
+        <div class="hero-card">
+          <div class="hero-copy">
+            <p class="eyebrow">五城内测版</p>
+            <h1 id="homeTitle">今天想去<br><em>哪座城？</em></h1>
+            <p>选好城市和节奏，马上得到一条顺路、能执行的行程。</p>
+          </div>
+          <img class="hero-art" src="travel-cities.png" alt="岭南骑楼、西湖与城市天际线组成的旅行插画">
+        </div>
+
+        <div class="section-heading"><h2>选择目的地</h2><span>5座城市</span></div>
+        <div class="city-strip" id="cityStrip" role="list"></div>
+
+        <button class="choose-places" id="choosePlacesBtn" type="button"><span><b>自己选择想去的地点</b><small>勾选后自动计算更顺路的线路</small></span><strong>去选择 →</strong></button>
+        <section class="place-picker" id="placePicker" hidden aria-labelledby="pickerTitle">
+          <div class="picker-head"><div><p class="eyebrow">自由规划</p><h2 id="pickerTitle">选择地点</h2></div><button type="button" id="closePicker" aria-label="关闭">×</button></div>
+          <label class="search-box"><span>⌕</span><input id="placeSearch" type="search" placeholder="搜索景点、美食、文化地点"></label>
+          <div class="picker-actions"><span id="pickCount">已选 0 个</span><button type="button" id="clearPicks">清空</button></div>
+          <div class="place-options" id="placeOptions"></div>
+          <button class="primary-button" id="buildCustomPlan" type="button"><span>生成最合适线路</span><b>→</b></button>
+        </section>
+
+        <form class="planner-card" id="plannerForm">
+          <div class="field-row">
+            <label><span>玩几天</span><select id="days"><option value="1">1天</option><option value="2" selected>2天</option><option value="3">3天</option><option value="4">4天</option></select></label>
+            <label><span>旅行节奏</span><select id="pace"><option value="slow">轻松</option><option value="normal" selected>适中</option><option value="fast">紧凑</option></select></label>
+          </div>
+          <fieldset>
+            <legend>更想体验</legend>
+            <div class="chips" id="interestChips">
+              <button type="button" class="chip selected" data-interest="经典">经典</button>
+              <button type="button" class="chip" data-interest="美食">美食</button>
+              <button type="button" class="chip" data-interest="自然">自然</button>
+              <button type="button" class="chip" data-interest="文化">文化</button>
+              <button type="button" class="chip" data-interest="拍照">拍照</button>
+              <button type="button" class="chip" data-interest="亲子">亲子</button>
+            </div>
+          </fieldset>
+          <button class="primary-button" type="submit"><span>生成我的路线</span><b>→</b></button>
+        </form>
+
+        <div class="quick-section">
+          <div class="section-heading"><h2>灵感主题</h2></div>
+          <div class="theme-grid">
+            <button class="theme-card" data-theme="美食"><span>🥢</span><b>一路吃过去</b><small>老店与本地味</small></button>
+            <button class="theme-card" data-theme="拍照"><span>📷</span><b>城市出片路线</b><small>建筑与日落</small></button>
+            <button class="theme-card" data-theme="自然"><span>🌿</span><b>松弛自然行</b><small>湖海与公园</small></button>
+            <button class="theme-card" data-theme="亲子"><span>🪁</span><b>带娃轻松玩</b><small>少走路不赶场</small></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="tripView" aria-labelledby="tripTitle">
+        <div class="trip-head">
+          <div><p class="eyebrow" id="tripMeta">2日 · 适中</p><h1 id="tripTitle">广州行程</h1></div>
+          <button class="round-action" id="shareBtn" type="button" aria-label="分享行程">↗</button>
+        </div>
+        <div class="summary-strip">
+          <div><small>地点</small><b id="spotCount">0</b></div>
+          <div><small>预计步行</small><b id="walkTotal">0 km</b></div>
+          <div><small>基础预算</small><b id="budgetTotal">¥0</b></div>
+        </div>
+        <div class="day-tabs" id="dayTabs" role="tablist"></div>
+        <div class="weather-note" id="weatherNote"><span>☀️</span><p><b>适合出发</b><small>天气信息将在联网时更新，请以出行当日为准</small></p></div>
+        <div class="timeline" id="timeline"></div>
+        <button class="secondary-button" id="optimizeBtn" type="button">重新优化顺序</button>
+      </section>
+
+      <section class="view map-view" id="mapView" aria-labelledby="mapTitle">
+        <div class="map-heading"><div><p class="eyebrow">今日路线</p><h1 id="mapTitle">地图</h1></div><button class="map-locate" id="locateBtn" type="button">◎ 定位</button></div>
+        <div id="map" aria-label="行程地图"></div>
+        <div class="map-fallback" id="mapFallback" hidden><b>地图暂时未载入</b><span>地点列表仍可使用，点击“导航”会打开高德地图。</span></div>
+        <div class="map-sheet" id="mapSheet"><span class="sheet-handle"></span><div id="mapRouteList"></div></div>
+      </section>
+
+      <section class="view" id="savedView" aria-labelledby="savedTitle">
+        <div class="simple-head"><p class="eyebrow">随手收藏</p><h1 id="savedTitle">想去的地方</h1></div>
+        <div class="saved-list" id="savedList"></div>
+      </section>
+
+      <section class="view" id="aiView" aria-labelledby="aiTitle">
+        <div class="ai-head">
+          <span class="ai-orb">✦</span>
+          <div><p class="eyebrow">GPT-5.6 路线顾问</p><h1 id="aiTitle">告诉我你想怎么玩</h1><p>说清出发地、目的地、日期和偏好，我会给出逐站时间与避峰方案。</p></div>
+        </div>
+        <div class="prompt-suggestions">
+          <button type="button" data-prompt="10月1日从广州出发去东莞玩两天，担心人多，希望错峰并少走路">国庆 · 广州去东莞</button>
+          <button type="button" data-prompt="情侣周末两天，想拍照、看日落，人均预算800元">情侣 · 拍照日落</button>
+          <button type="button" data-prompt="带孩子玩一天，安排亲子景点，中午附近吃饭">亲子 · 一日轻松</button>
+        </div>
+        <div class="chat-thread" id="chatThread">
+          <article class="chat-message assistant"><span>✦</span><p>你好，我会结合当前选择的城市和地点库，为你安排一条可执行的路线。你想怎么游玩？</p></article>
+        </div>
+        <form class="chat-composer" id="aiForm">
+          <textarea id="aiPrompt" rows="3" maxlength="600" placeholder="例如：10月1日从广州出发去东莞，玩两天，担心人多……" required></textarea>
+          <div><span id="aiCityLabel">当前：广州</span><button type="submit" id="aiSend">发送 ✦</button></div>
+        </form>
+        <p class="ai-privacy">请勿输入身份证、手机号等敏感信息。AI 结果可能有误，开放时间和票价请在出发前核实。</p>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主要导航">
+      <a href="#home" class="active" data-view="home"><span>⌂</span><b>首页</b></a>
+      <a href="#trip" data-view="trip"><span>◫</span><b>行程</b></a>
+      <a href="#map" data-view="map"><span>⌖</span><b>地图</b></a>
+      <a href="#ai" data-view="ai"><span>✦</span><b>AI规划</b></a>
+      <a href="#saved" data-view="saved"><span>♡</span><b>收藏</b></a>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
