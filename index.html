@@ -21,7 +21,7 @@
   <div id="app">
     <header class="topbar">
       <a class="brand" href="#home" aria-label="游迹首页"><span class="brand-mark">迹</span><span>游迹</span></a>
-      <button class="icon-button" id="installBtn" type="button" aria-label="安装到手机" hidden>↓</button>
+      <div class="top-actions"><button class="points-pill" id="pointsPill" type="button" aria-label="查看积分">未登录</button><button class="icon-button" id="installBtn" type="button" aria-label="安装到手机" hidden>↓</button><button class="account-button" id="accountBtn" type="button" aria-label="个人账户">我</button></div>
     </header>
 
     <main>
@@ -117,7 +117,7 @@
       <section class="view" id="aiView" aria-labelledby="aiTitle">
         <div class="ai-head">
           <span class="ai-orb">✦</span>
-          <div><p class="eyebrow">GPT-5.6 路线顾问</p><h1 id="aiTitle">告诉我你想怎么玩</h1><p>说清出发地、目的地、日期和偏好，我会给出逐站时间与避峰方案。</p></div>
+          <div><p class="eyebrow">AI 路线顾问 · 100积分/次</p><h1 id="aiTitle">告诉我你想怎么玩</h1><p>生成后会得到一份可编辑表格，确认时间与地点后再应用到自己的方案。</p></div>
         </div>
         <div class="prompt-suggestions">
           <button type="button" data-prompt="10月1日从广州出发去东莞玩两天，担心人多，希望错峰并少走路">国庆 · 广州去东莞</button>
@@ -132,6 +132,20 @@
           <div><span id="aiCityLabel">当前：广州</span><button type="submit" id="aiSend">发送 ✦</button></div>
         </form>
         <p class="ai-privacy">请勿输入身份证、手机号等敏感信息。AI 结果可能有误，开放时间和票价请在出发前核实。</p>
+      </section>
+
+      <section class="view" id="accountView" aria-labelledby="accountTitle">
+        <div class="account-hero"><p class="eyebrow">个人中心</p><h1 id="accountTitle">我的账户</h1><p>AI 规划每次消耗100积分；积分以服务器最终记录为准。</p></div>
+        <section class="account-login" id="accountLoggedOut">
+          <div class="account-card"><h2>邮箱快捷注册 / 登录</h2><p>输入邮箱即可创建内测账户。正式版会发送邮箱验证码。</p><form id="emailAccountForm"><label><span>邮箱</span><input id="accountEmail" type="email" autocomplete="email" placeholder="name@example.com" required></label><button class="primary-button" type="submit"><span>继续</span><b>→</b></button></form></div>
+        </section>
+        <section id="accountLoggedIn" hidden>
+          <div class="profile-card"><span class="profile-avatar" id="profileAvatar">我</span><div><b id="profileEmail">—</b><small id="profileRole">普通用户</small></div><button id="signOutBtn" type="button">退出</button></div>
+          <div class="points-balance"><div><small>可用积分</small><b id="pointsBalance">0</b></div><span>每次AI规划 -100</span></div>
+          <div class="account-card"><h2>充值积分</h2><p>先生成充值申请；接入微信或支付宝商户后才能完成真实付款。</p><div class="recharge-grid"><button type="button" data-recharge="100">100积分<small>¥1</small></button><button type="button" data-recharge="500">500积分<small>¥5</small></button><button type="button" data-recharge="1000">1000积分<small>¥10</small></button></div><div class="recharge-status" id="rechargeStatus" hidden></div></div>
+          <div class="account-card"><h2>卡密兑换</h2><form class="redeem-form" id="redeemForm"><input id="redeemCode" autocomplete="off" maxlength="32" placeholder="输入兑换卡密" required><button type="submit">兑换</button></form><p class="form-hint" id="redeemHint">每张卡密仅限兑换一次。</p></div>
+          <div class="account-card admin-panel" id="adminPanel" hidden><div class="admin-title"><div><h2>管理员积分台</h2><p>查看账户并直接增加或扣减积分。</p></div><span>ADMIN</span></div><div id="adminUserList"></div></div>
+        </section>
       </section>
 
       <section class="view" id="communityView" aria-labelledby="communityTitle">
